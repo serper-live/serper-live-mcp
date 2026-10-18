@@ -115,6 +115,18 @@ npm run build
 npx @modelcontextprotocol/inspector node dist/index.js
 ```
 
+## Releasing
+
+The version lives in three places that must match: `package.json`, and `version` plus `packages[0].version` in `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm.
+
+```bash
+npm version patch --no-git-tag-version   # bump package.json and package-lock.json
+# set the same version in server.json (both fields)
+git commit -am "Release x.y.z" && git push
+npm publish --access public              # builds dist first, asks for the 2FA code
+mcp-publisher publish                    # updates the MCP Registry entry
+```
+
 ## Links
 
 - [Serper.live](https://serper.live) — live Google SERP API

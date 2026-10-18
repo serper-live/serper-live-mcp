@@ -8,13 +8,13 @@
     "url": "https://github.com/serper-live/serper-live-mcp",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "1.0.0",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@serper-live/mcp",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "transport": {
         "type": "stdio"
       },
