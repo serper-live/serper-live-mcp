@@ -1,0 +1,49 @@
+{
+  "name": "@serper-live/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Serper.live: live Google search results, domain positions and open markets for AI agents",
+  "mcpName": "io.github.serper-live/serper-live-mcp",
+  "type": "module",
+  "bin": {
+    "serper-live-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "serp",
+    "serp-api",
+    "google-search",
+    "rank-tracking",
+    "seo"
+  ],
+  "homepage": "https://serper.live",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serper-live/serper-live-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/serper-live/serper-live-mcp/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "typescript": "^5.9.3"
+  }
+}

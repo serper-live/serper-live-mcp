@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.serper-live/serper-live-mcp",
+  "title": "Serper.live",
+  "description": "Live Google search results, domain positions and open markets via the Serper.live SERP API.",
+  "websiteUrl": "https://serper.live",
+  "repository": {
+    "url": "https://github.com/serper-live/serper-live-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@serper-live/mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SERPER_LIVE_TOKEN",
+          "description": "Serper.live API token (sl_live_…) from https://serper.live/account/tokens",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
