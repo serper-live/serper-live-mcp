@@ -117,15 +117,17 @@ npx @modelcontextprotocol/inspector node dist/index.js
 
 ## Releasing
 
-The version lives in three places that must match: `package.json`, and `version` plus `packages[0].version` in `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm.
+The version lives in three places that must match: `package.json`, and `version` plus `packages[0].version` in `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm. A pushed `v*` tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml): it checks that the tag matches all three, builds, publishes to npm through trusted publishing (no npm token, with provenance) and updates the MCP Registry through GitHub OIDC.
 
 ```bash
 npm version patch --no-git-tag-version   # bump package.json and package-lock.json
 # set the same version in server.json (both fields)
-git commit -am "Release x.y.z" && git push
-npm publish --access public              # builds dist first, asks for the 2FA code
-mcp-publisher publish                    # updates the MCP Registry entry
+git commit -am "Release x.y.z"
+git tag vx.y.z
+git push && git push --tags
 ```
+
+The npm package lists this workflow as its trusted publisher (package settings → Trusted Publisher → GitHub Actions: `serper-live/serper-live-mcp`, workflow `publish.yml`).
 
 ## Links
 

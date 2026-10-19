@@ -1,0 +1,62 @@
+# Publishes a release when a version tag (v1.2.3) is pushed: the npm package through trusted publishing
+# (OIDC, no npm token, provenance attached) and the server.json entry in the official MCP Registry
+# through GitHub OIDC. The tag must match the version in package.json and in both fields of server.json.
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Check that the tag matches package.json and server.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          package=$(node -p "require('./package.json').version")
+          server=$(node -p "require('./server.json').version")
+          server_package=$(node -p "require('./server.json').packages[0].version")
+          echo "tag $tag, package.json $package, server.json $server / $server_package"
+          test "$tag" = "$package" && test "$tag" = "$server" && test "$tag" = "$server_package"
+
+      - name: Update npm for trusted publishing
+        run: npm install -g npm@11
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check and build
+        run: |
+          npm run type-check
+          npm run build
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz \
+            | tar xz mcp-publisher
+
+      - name: Publish to the MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish

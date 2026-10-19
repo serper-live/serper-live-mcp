@@ -1,6 +1,6 @@
 {
   "name": "@serper-live/mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for Serper.live: live Google search results, domain positions and open markets for AI agents",
   "author": "Serper.live <dev@serper.live> (https://serper.live)",
   "mcpName": "io.github.serper-live/serper-live-mcp",
