@@ -36,6 +36,8 @@ jobs:
           server_package=$(node -p "require('./server.json').packages[0].version")
           echo "tag $tag, package.json $package, server.json $server / $server_package"
           test "$tag" = "$package" && test "$tag" = "$server" && test "$tag" = "$server_package"
+          name=$(node -p "require('./package.json').name")
+          echo "NPM_VERSION_URL=https://registry.npmjs.org/${name/\//%2F}/$tag" >> "$GITHUB_ENV"
 
       - name: Update npm for trusted publishing
         run: npm install -g npm@11
@@ -48,8 +50,24 @@ jobs:
           npm run type-check
           npm run build
 
+      # A version npm already has is skipped, so a run that failed at the registry step can be re-run as is.
       - name: Publish to npm
-        run: npm publish --access public --provenance
+        run: |
+          if curl -fsS -o /dev/null "$NPM_VERSION_URL"; then
+            echo "npm already has this version, skipping"
+          else
+            npm publish --access public --provenance
+          fi
+
+      # The MCP Registry rejects a version npm does not serve yet, and npm takes a while to make a new one visible.
+      - name: Wait until npm serves the version
+        run: |
+          for attempt in $(seq 90); do
+            curl -fsS -o /dev/null "$NPM_VERSION_URL" && exit 0
+            sleep 20
+          done
+          echo "npm still does not serve $NPM_VERSION_URL" >&2
+          exit 1
 
       - name: Install mcp-publisher
         run: |

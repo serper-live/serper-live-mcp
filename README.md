@@ -117,7 +117,7 @@ npx @modelcontextprotocol/inspector node dist/index.js
 
 ## Releasing
 
-The version lives in three places that must match: `package.json`, and `version` plus `packages[0].version` in `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm. A pushed `v*` tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml): it checks that the tag matches all three, builds, publishes to npm through trusted publishing (no npm token, with provenance) and updates the MCP Registry through GitHub OIDC.
+The version lives in three places that must match: `package.json`, and `version` plus `packages[0].version` in `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm. A pushed `v*` tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml): it checks that the tag matches all three, builds, publishes to npm through trusted publishing (no npm token, with provenance), waits until npm serves the new version (up to 30 minutes) and updates the MCP Registry through GitHub OIDC. A failed run can be re-run as is: a version npm already has is not published again.
 
 ```bash
 npm version patch --no-git-tag-version   # bump package.json and package-lock.json
@@ -127,7 +127,7 @@ git tag vx.y.z
 git push && git push --tags
 ```
 
-The npm package lists this workflow as its trusted publisher (package settings → Trusted Publisher → GitHub Actions: `serper-live/serper-live-mcp`, workflow `publish.yml`).
+The npm package lists this workflow as its trusted publisher (package settings → Trusted Publisher → GitHub Actions: `serper-live/serper-live-mcp`, workflow `publish.yml`, with **Allow npm publish** ticked under Allowed actions).
 
 ## Links
 
