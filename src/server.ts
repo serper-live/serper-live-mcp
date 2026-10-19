@@ -1,5 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { type CallToolResult, McpServer } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import { describeError, type Device, type SearchResponse, type SerperLiveClient } from './client.js';
 
@@ -7,14 +6,14 @@ const PRICING_URL = 'https://serper.live/pricing';
 
 const country = z.string()
     .regex(/^[A-Za-z]{2}$/)
-    .describe('Two-letter code of the market to search in, e.g. "US", "GB", "DE", "TR". Call list_countries for the markets that are open right now.');
+    .describe('Two-letter code of the market to search in, e.g. "US", "GB", "DE", "FR", "TR". Call list_countries for the markets that are open right now.');
 const query = z.string()
     .min(2)
     .max(120)
     .describe('Search keyword, exactly as a person would type it into Google.');
 const language = z.string()
     .optional()
-    .describe('Google interface language (hl), e.g. "en", "de", "uk". Defaults to the language of the country.');
+    .describe('Google interface language (hl), e.g. "en", "de", "fr", "uk". Defaults to the language of the country.');
 const device = z.enum(['desktop', 'mobile'])
     .optional()
     .describe('Browser persona Google sees. Desktop and mobile rankings often differ. Default: desktop.');
@@ -24,14 +23,24 @@ const device = z.enum(['desktop', 'mobile'])
  * descriptions state up front so an agent does not run them speculatively; list_countries is free.
  */
 export function createServer(client: SerperLiveClient, version: string): McpServer {
-    const server = new McpServer({ name: 'serper-live', version });
+    const server = new McpServer({
+        name: 'serper-live',
+        title: 'Serper.live',
+        version,
+        description: 'Live Google search results, domain positions and open markets via the Serper.live SERP API.',
+        websiteUrl: 'https://serper.live',
+        icons: [
+            { src: 'https://serper.live/favicon.svg', mimeType: 'image/svg+xml', sizes: ['any'] },
+            { src: 'https://serper.live/images/icon-512.png', mimeType: 'image/png', sizes: ['512x512'] },
+        ],
+    });
 
     server.registerTool('google_search', {
         title: 'Live Google search',
         description: 'Run a live Google search for a country, language and device and return the organic results in Google\'s order: position, title, URL, domain and snippet. '
             + 'Ads, sitelinks, video and image blocks are left out, so position is the organic rank. Every call is a real, uncached search that usually takes 2–3 seconds '
             + `and is billed to the Serper.live balance per page of up to 10 results (${PRICING_URL}).`,
-        inputSchema: {
+        inputSchema: z.object({
             query,
             country,
             language,
@@ -42,7 +51,7 @@ export function createServer(client: SerperLiveClient, version: string): McpServ
                 .max(100)
                 .optional()
                 .describe('How many organic results to return, 1–100. Default: 10. Each started page of 10 results is billed.'),
-        },
+        }),
         annotations: {
             readOnlyHint: true,
             idempotentHint: false,
@@ -72,7 +81,7 @@ export function createServer(client: SerperLiveClient, version: string): McpServ
             + 'Returns the best position and every position if the site appears more than once, or a note that the domain is outside the checked depth. '
             + 'A subdomain counts as the domain: example.com also matches blog.example.com. '
             + `Billed like google_search for the depth checked: one page per started 10 results (${PRICING_URL}).`,
-        inputSchema: {
+        inputSchema: z.object({
             domain: z.string()
                 .min(3)
                 .max(253)
@@ -87,7 +96,7 @@ export function createServer(client: SerperLiveClient, version: string): McpServ
                 .max(100)
                 .optional()
                 .describe('How many organic results to check, 1–100. Default: 10. Use 30 or more to see positions beyond the first page.'),
-        },
+        }),
         annotations: {
             readOnlyHint: true,
             idempotentHint: false,

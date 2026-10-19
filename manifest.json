@@ -1,0 +1,80 @@
+{
+  "manifest_version": "0.3",
+  "name": "serper-live",
+  "display_name": "Serper.live",
+  "version": "2.0.0",
+  "description": "Live Google search results, domain positions and open markets via the Serper.live SERP API.",
+  "long_description": "Run a real Google search for the country, language and device you choose and check where a domain ranks right now. Every search is fresh: nothing is cached, and a page of 10 results usually comes back in 2–3 seconds. Positions count organic results only, without ads, sitelinks, video or image blocks.\n\nSearches are billed to your [Serper.live](https://serper.live) balance per page of up to 10 organic results ([pricing](https://serper.live/pricing)); listing the open markets is free. Create an API token at [serper.live/account/tokens](https://serper.live/account/tokens) and enter it when installing.",
+  "author": {
+    "name": "Serper.live",
+    "email": "dev@serper.live",
+    "url": "https://serper.live"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serper-live/serper-live-mcp"
+  },
+  "homepage": "https://serper.live",
+  "documentation": "https://serper.live/docs#mcp",
+  "support": "https://github.com/serper-live/serper-live-mcp/issues",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {
+        "SERPER_LIVE_TOKEN": "${user_config.token}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "google_search",
+      "description": "Live organic Google results for a keyword, country, language and device, up to 100 per call. Billed per page of up to 10 results."
+    },
+    {
+      "name": "domain_position",
+      "description": "Where a domain ranks in Google for a keyword in a country and on a device; every position if it appears more than once. Billed like google_search."
+    },
+    {
+      "name": "list_countries",
+      "description": "Markets open right now and the default Google language of each. Free."
+    }
+  ],
+  "keywords": [
+    "google",
+    "search",
+    "serp",
+    "serp-api",
+    "rank-tracking",
+    "seo",
+    "google-search"
+  ],
+  "license": "MIT",
+  "privacy_policies": [
+    "https://serper.live/privacy"
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  },
+  "user_config": {
+    "token": {
+      "type": "string",
+      "title": "API token",
+      "description": "Serper.live API token (sl_live_…) from https://serper.live/account/tokens. Searches are billed to the balance of its account.",
+      "sensitive": true,
+      "required": true
+    }
+  }
+}

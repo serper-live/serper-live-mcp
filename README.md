@@ -12,12 +12,12 @@ Every search is fresh: nothing is cached, and a page of 10 results usually comes
 | `domain_position` | Where a domain ranks for a keyword in a country and on a device; every position if it appears more than once, or "not in the top N" | Same as `google_search` for the depth checked |
 | `list_countries` | Markets open right now and the default Google language of each | Free, no token |
 
-Arguments: `query` (2–120 characters), `country` (two-letter code such as `US`, `GB`, `DE`, `TR`, `UA`), optional `language` (Google interface language, defaults to the country's), `device` (`desktop` or `mobile`) and `limit` / `depth` (1–100, default 10).
+Arguments: `query` (2–120 characters), `country` (two-letter code such as `US`, `GB`, `DE`, `FR`, `TR`, `UA`), optional `language` (Google interface language, defaults to the country's), `device` (`desktop` or `mobile`) and `limit` / `depth` (1–100, default 10).
 
 ## Setup
 
 1. Create an account at [serper.live](https://serper.live), add credit (from $5 in USDT or USDC, no subscription, credit never expires) and create an API token on [API tokens](https://serper.live/account/tokens).
-2. Add the server to your client with the token in `SERPER_LIVE_TOKEN`. It runs with `npx`, so Node.js 18 or newer is all you need.
+2. Add the server to your client with the token in `SERPER_LIVE_TOKEN`. It runs with `npx`, so Node.js 20 or newer is all you need; Claude Desktop can also install it in one click without Node.js.
 
 ### Claude Code
 
@@ -27,7 +27,9 @@ claude mcp add serper-live -e SERPER_LIVE_TOKEN=sl_live_YOUR_TOKEN -- npx -y @se
 
 ### Claude Desktop
 
-`claude_desktop_config.json`:
+One click: download [`serper-live-mcp.mcpb`](https://github.com/serper-live/serper-live-mcp/releases/latest/download/serper-live-mcp.mcpb) from the latest release and open it. Claude Desktop shows an install dialog, asks for the API token once, stores it securely and runs the server with its own Node.js.
+
+Or by hand, in `claude_desktop_config.json`:
 
 ```json
 {
@@ -113,18 +115,20 @@ Searches are billed to your Serper.live balance per page of up to 10 organic res
 npm install
 npm run build
 npx @modelcontextprotocol/inspector node dist/index.js
+npm run bundle   # serper-live-mcp.mcpb: dist/, manifest.json, icon.png and the production dependencies
 ```
 
 ## Releasing
 
-The version lives in three places that must match: `package.json`, and `version` plus `packages[0].version` in `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm. A pushed `v*` tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml): it checks that the tag matches all three, builds, publishes to npm through trusted publishing (no npm token, with provenance), waits until npm serves the new version (up to 30 minutes) and updates the MCP Registry through GitHub OIDC. A failed run can be re-run as is: a version npm already has is not published again.
+The version lives in `package.json`, in `version` plus `packages[0].version` of `server.json`, which the [MCP Registry](https://registry.modelcontextprotocol.io) checks against npm, and in `manifest.json` of the MCP Bundle. `npm version` sets all of them: its `version` script ([`scripts/sync-version.mjs`](scripts/sync-version.mjs)) copies the new version into `server.json` and `manifest.json`.
+
+A pushed `v*` tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml): it checks that the tag matches every version field, builds, packs and validates the MCP Bundle, publishes to npm through trusted publishing (no npm token, with provenance), waits until npm serves the new version (up to 30 minutes), attaches `serper-live-mcp.mcpb` to the GitHub release and updates the MCP Registry through GitHub OIDC with two packages: npm and the bundle with its SHA-256. A failed run can be re-run as is: a version npm already has is not published again, and the release asset is replaced.
 
 ```bash
-npm version patch --no-git-tag-version   # bump package.json and package-lock.json
-# set the same version in server.json (both fields)
+npm version x.y.z --no-git-tag-version   # package.json, package-lock.json, server.json, manifest.json
 git commit -am "Release x.y.z"
 git tag vx.y.z
-git push && git push --tags
+git push && git push origin vx.y.z
 ```
 
 The npm package lists this workflow as its trusted publisher (package settings → Trusted Publisher → GitHub Actions: `serper-live/serper-live-mcp`, workflow `publish.yml`, with **Allow npm publish** ticked under Allowed actions).

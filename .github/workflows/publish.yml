@@ -1,6 +1,7 @@
 # Publishes a release when a version tag (v1.2.3) is pushed: the npm package through trusted publishing
-# (OIDC, no npm token, provenance attached) and the server.json entry in the official MCP Registry
-# through GitHub OIDC. The tag must match the version in package.json and in both fields of server.json.
+# (OIDC, no npm token, provenance attached), the MCP Bundle (serper-live-mcp.mcpb) as an asset of the GitHub release,
+# and the server.json entry in the official MCP Registry through GitHub OIDC, listing both packages. The tag must match
+# the version in package.json, in both fields of server.json and in manifest.json.
 name: Publish
 
 on:
@@ -8,7 +9,7 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 concurrency:
@@ -28,14 +29,15 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
-      - name: Check that the tag matches package.json and server.json
+      - name: Check that the tag matches package.json, server.json and manifest.json
         run: |
           tag="${GITHUB_REF_NAME#v}"
           package=$(node -p "require('./package.json').version")
           server=$(node -p "require('./server.json').version")
           server_package=$(node -p "require('./server.json').packages[0].version")
-          echo "tag $tag, package.json $package, server.json $server / $server_package"
-          test "$tag" = "$package" && test "$tag" = "$server" && test "$tag" = "$server_package"
+          manifest=$(node -p "require('./manifest.json').version")
+          echo "tag $tag, package.json $package, server.json $server / $server_package, manifest.json $manifest"
+          test "$tag" = "$package" && test "$tag" = "$server" && test "$tag" = "$server_package" && test "$tag" = "$manifest"
           name=$(node -p "require('./package.json').name")
           echo "NPM_VERSION_URL=https://registry.npmjs.org/${name/\//%2F}/$tag" >> "$GITHUB_ENV"
 
@@ -50,7 +52,12 @@ jobs:
           npm run type-check
           npm run build
 
-      # A version npm already has is skipped, so a run that failed at the registry step can be re-run as is.
+      - name: Pack the MCP Bundle
+        run: |
+          npx mcpb validate manifest.json
+          npm run bundle
+
+      # A version npm already has is skipped, so a run that failed at a later step can be re-run as is.
       - name: Publish to npm
         run: |
           if curl -fsS -o /dev/null "$NPM_VERSION_URL"; then
@@ -68,6 +75,26 @@ jobs:
           done
           echo "npm still does not serve $NPM_VERSION_URL" >&2
           exit 1
+
+      - name: Attach the MCP Bundle to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
+          gh release upload "$GITHUB_REF_NAME" serper-live-mcp.mcpb --clobber
+
+      # The bundle's hash is known only after packing, so its entry is added to server.json here rather than committed.
+      - name: List the MCP Bundle in server.json
+        run: |
+          node -e '
+            const fs = require("fs");
+            const [url, sha] = process.argv.slice(1);
+            const server = JSON.parse(fs.readFileSync("server.json", "utf8"));
+            server.packages.push({ registryType: "mcpb", identifier: url, version: server.version, fileSha256: sha, transport: { type: "stdio" } });
+            fs.writeFileSync("server.json", JSON.stringify(server, null, 2));
+          ' "https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/serper-live-mcp.mcpb" \
+            "$(sha256sum serper-live-mcp.mcpb | cut -d ' ' -f 1)"
 
       - name: Install mcp-publisher
         run: |

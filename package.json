@@ -1,6 +1,6 @@
 {
   "name": "@serper-live/mcp",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "MCP server for Serper.live: live Google search results, domain positions and open markets for AI agents",
   "author": "Serper.live <dev@serper.live> (https://serper.live)",
   "mcpName": "io.github.serper-live/serper-live-mcp",
@@ -14,12 +14,14 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "bundle": "node scripts/bundle.mjs",
+    "version": "node scripts/sync-version.mjs"
   },
   "keywords": [
     "mcp",
@@ -44,10 +46,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1",
-    "zod": "^4.0.0"
+    "@modelcontextprotocol/server": "^2.3.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2",
     "@types/node": "^22.19.0",
     "typescript": "^5.9.3"
   }
