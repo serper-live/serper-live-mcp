@@ -1,5 +1,7 @@
 # Serper.live MCP server
 
+[![Serper Live MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/serper-live/serper-live-mcp/badges/score.svg)](https://glama.ai/mcp/servers/serper-live/serper-live-mcp)
+
 Live Google search for AI agents. This [Model Context Protocol](https://modelcontextprotocol.io) server lets Claude, OpenAI Codex, Cursor, VS Code and other MCP clients run a real Google search through [Serper.live](https://serper.live) for the country, language and device you choose, and check where a domain ranks right now.
 
 Every search is fresh: nothing is cached, and a page of 10 results usually comes back in 2–3 seconds. Positions count organic results only, without ads, sitelinks, video or image blocks, so the number an agent reads is the number a rank tracker would store.
@@ -124,7 +126,7 @@ Any other MCP client: run `npx -y @serper-live/mcp` over stdio with `SERPER_LIVE
 
 ## Billing and retries
 
-Searches are billed to your Serper.live balance per page of up to 10 organic results, at the price of the market ([pricing](https://serper.live/pricing)); desktop and mobile cost the same. Each call sends an `Idempotency-Key`, and a call that loses its connection is retried once with the same key, so a search that already finished is returned again instead of being billed twice. A search that fails on the Serper.live side is not charged.
+Searches are billed to your Serper.live balance per page of up to 10 organic results, at the price of the market ([pricing](https://serper.live/pricing)); desktop and mobile cost the same. Each call sends an `Idempotency-Key`, so a repeated call is never billed twice.
 
 ## Development
 
