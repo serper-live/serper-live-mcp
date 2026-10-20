@@ -109,7 +109,7 @@ args = ["-y", "@serper-live/mcp"]
 SERPER_LIVE_TOKEN = "sl_live_YOUR_TOKEN"
 ```
 
-Any other MCP client: run `npx -y @serper-live/mcp` over stdio with `SERPER_LIVE_TOKEN` in the environment.
+Any other MCP client: run `npx -y @serper-live/mcp` over stdio with `SERPER_LIVE_TOKEN` in the environment. Agents that set up servers from a repository, such as Cline, follow [`llms-install.md`](llms-install.md).
 
 ## Environment
 
