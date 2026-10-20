@@ -23,7 +23,8 @@ For Cline the file is `cline_mcp_settings.json`: Cline for JetBrains and the Cli
         "SERPER_LIVE_TOKEN": "sl_live_YOUR_TOKEN"
       },
       "disabled": false,
-      "autoApprove": ["list_countries"]
+      "autoApprove": ["list_countries"],
+      "timeout": 120
     }
   }
 }
