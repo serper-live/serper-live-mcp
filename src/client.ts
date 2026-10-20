@@ -181,7 +181,8 @@ export function describeError(ex: unknown): string {
         case 'busy':
             return 'Serper.live is at capacity right now. Retry in a few seconds.';
         default:
-            return ex.status >= 500
+            // 408 and 424 are a search that ran out of time or failed on the service side, never charged like any 5xx
+            return ex.status >= 500 || ex.status === 408 || ex.status === 424
                 ? `${ex.message} (${ex.code}). Nothing was charged for this request; retry in a few seconds.`
                 : `${ex.message} (${ex.code}).`
             ;
