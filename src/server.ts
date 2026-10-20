@@ -6,14 +6,14 @@ const PRICING_URL = 'https://serper.live/pricing';
 
 const country = z.string()
     .regex(/^[A-Za-z]{2}$/)
-    .describe('Two-letter code of the market to search in, e.g. "US", "GB", "DE", "FR", "TR". Call list_countries for the markets that are open right now.');
+    .describe('Two-letter code of the market to search in, e.g. "US", "GB", "DE", "FR", "TR": Google sees a visitor from this country. Call list_countries for the markets that are open right now.');
 const query = z.string()
     .min(2)
     .max(120)
     .describe('Search keyword, exactly as a person would type it into Google.');
 const language = z.string()
     .optional()
-    .describe('Google interface language (hl), e.g. "en", "de", "fr", "uk". Defaults to the language of the country.');
+    .describe('Google interface language (hl), e.g. "en", "de", "fr", "uk". Defaults to the language of the country; the market itself is set by country.');
 const device = z.enum(['desktop', 'mobile'])
     .optional()
     .describe('Browser persona Google sees. Desktop and mobile rankings often differ. Default: desktop.');
@@ -39,7 +39,8 @@ export function createServer(client: SerperLiveClient, version: string): McpServ
         title: 'Live Google search',
         description: 'Run a live Google search for a country, language and device and return the organic results in Google\'s order: position, title, URL, domain and snippet. '
             + 'Ads, sitelinks, video and image blocks are left out, so position is the organic rank. Every call is a real, uncached search that usually takes 2–3 seconds '
-            + `and is billed to the Serper.live balance per page of up to 10 results (${PRICING_URL}).`,
+            + `and is billed to the Serper.live balance per page of up to 10 results (${PRICING_URL}). `
+            + 'Use it to see the whole result list; to check where one site ranks, use domain_position instead.',
         inputSchema: z.object({
             query,
             country,
@@ -78,9 +79,9 @@ export function createServer(client: SerperLiveClient, version: string): McpServ
     server.registerTool('domain_position', {
         title: 'Domain position in Google',
         description: 'Find where a domain ranks in Google\'s organic results for a keyword, in a country and on a device, right now. '
-            + 'Returns the best position and every position if the site appears more than once, or a note that the domain is outside the checked depth. '
-            + 'A subdomain counts as the domain: example.com also matches blog.example.com. '
-            + `Billed like google_search for the depth checked: one page per started 10 results (${PRICING_URL}).`,
+            + 'Prefer it over google_search when only one site matters: it returns that site\'s best position and every other position, '
+            + 'or a note that the site is outside the checked depth. A subdomain counts as the domain: example.com also matches blog.example.com. '
+            + `Billed like google_search, per started 10 results of depth (${PRICING_URL}).`,
         inputSchema: z.object({
             domain: z.string()
                 .min(3)
@@ -137,6 +138,7 @@ export function createServer(client: SerperLiveClient, version: string): McpServ
     server.registerTool('list_countries', {
         title: 'Open Serper.live markets',
         description: 'List the countries Serper.live can search right now, with the default Google interface language of each. '
+            + 'Call it when unsure whether a market is open, then pass a returned code as country to google_search or domain_position. '
             + 'Desktop and mobile are available in every market. Free, no token needed.',
         annotations: {
             readOnlyHint: true,

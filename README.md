@@ -1,6 +1,6 @@
 # Serper.live MCP server
 
-Live Google search for AI agents. This [Model Context Protocol](https://modelcontextprotocol.io) server lets Claude, Cursor, VS Code and other MCP clients run a real Google search through [Serper.live](https://serper.live) for the country, language and device you choose, and check where a domain ranks right now.
+Live Google search for AI agents. This [Model Context Protocol](https://modelcontextprotocol.io) server lets Claude, OpenAI Codex, Cursor, VS Code and other MCP clients run a real Google search through [Serper.live](https://serper.live) for the country, language and device you choose, and check where a domain ranks right now.
 
 Every search is fresh: nothing is cached, and a page of 10 results usually comes back in 2–3 seconds. Positions count organic results only, without ads, sitelinks, video or image blocks, so the number an agent reads is the number a rank tracker would store.
 
@@ -88,6 +88,23 @@ Or by hand, in `claude_desktop_config.json`:
     }
   }
 }
+```
+
+### OpenAI Codex
+
+```bash
+codex mcp add serper-live --env SERPER_LIVE_TOKEN=sl_live_YOUR_TOKEN -- npx -y @serper-live/mcp
+```
+
+Or by hand, in `~/.codex/config.toml` (the Codex CLI, its IDE extension and the ChatGPT desktop app share this file):
+
+```toml
+[mcp_servers.serper-live]
+command = "npx"
+args = ["-y", "@serper-live/mcp"]
+
+[mcp_servers.serper-live.env]
+SERPER_LIVE_TOKEN = "sl_live_YOUR_TOKEN"
 ```
 
 Any other MCP client: run `npx -y @serper-live/mcp` over stdio with `SERPER_LIVE_TOKEN` in the environment.

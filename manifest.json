@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "serper-live",
   "display_name": "Serper.live",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Live Google search results, domain positions and open markets via the Serper.live SERP API.",
   "long_description": "Run a real Google search for the country, language and device you choose and check where a domain ranks right now. Every search is fresh: nothing is cached, and a page of 10 results usually comes back in 2–3 seconds. Positions count organic results only, without ads, sitelinks, video or image blocks.\n\nSearches are billed to your [Serper.live](https://serper.live) balance per page of up to 10 organic results ([pricing](https://serper.live/pricing)); listing the open markets is free. Create an API token at [serper.live/account/tokens](https://serper.live/account/tokens) and enter it when installing.",
   "author": {
