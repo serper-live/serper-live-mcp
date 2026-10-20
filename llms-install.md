@@ -9,7 +9,9 @@ Instructions for an AI agent (Cline and similar) setting up this server for a us
 
 ## Configuration
 
-Add the server to the MCP settings file of the client (for Cline: `cline_mcp_settings.json`), with the token from the user in place of `sl_live_YOUR_TOKEN`:
+Add the server to the MCP settings file of the client, with the token from the user in place of `sl_live_YOUR_TOKEN`. Keep any servers already in the file.
+
+For Cline the file is `cline_mcp_settings.json`: Cline for JetBrains and the Cline CLI keep it at `~/.cline/data/settings/cline_mcp_settings.json`; in any Cline it also opens from the MCP Servers panel → Configure → Configure MCP Servers. Do not search the IDE's own files for it.
 
 ```json
 {
