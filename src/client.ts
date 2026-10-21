@@ -89,7 +89,7 @@ export class SerperLiveClient {
         } catch (ex) {
             if (
                 ex instanceof ApiError
-                && 'network_error' === ex.code
+                && ex.code === 'network_error'
             ) {
                 return await this.request<SearchResponse>('POST', '/v1/search', params, key);
             }
@@ -109,16 +109,16 @@ export class SerperLiveClient {
             'User-Agent': this.userAgent,
         };
 
-        if (undefined !== body) {
+        if (body !== undefined) {
             headers['Content-Type'] = 'application/json';
         }
         if (
             null !== this.token
-            && '/v1/search' === path
+            && path === '/v1/search'
         ) {
             headers['Authorization'] = `Bearer ${this.token}`;
         }
-        if (undefined !== idempotencyKey) {
+        if (idempotencyKey !== undefined) {
             headers['Idempotency-Key'] = idempotencyKey;
         }
 
@@ -128,7 +128,7 @@ export class SerperLiveClient {
             response = await fetch(`${this.baseUrl.replace(/\/+$/, '')}${path}`, {
                 method,
                 headers,
-                body: undefined !== body
+                body: body !== undefined
                     ? JSON.stringify(body)
                     : undefined
                 ,
