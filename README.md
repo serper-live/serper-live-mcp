@@ -1,6 +1,6 @@
 # Serper.live MCP server
 
-[![Serper Live MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/serper-live/serper-live-mcp/badges/score.svg)](https://glama.ai/mcp/servers/serper-live/serper-live-mcp)
+[![Serper Live MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/serper-live/serper-live-mcp/badges/score.svg)](https://glama.ai/mcp/servers/serper-live/serper-live-mcp) [![Serper.live MCP on mcprush](https://mcprush.com/badge/serper-live-mcp/score.svg)](https://mcprush.com/to/serper-live-mcp?ref=badge)
 
 Live Google search for AI agents. This [Model Context Protocol](https://modelcontextprotocol.io) server lets Claude, OpenAI Codex, Cursor, VS Code and other MCP clients run a real Google search through [Serper.live](https://serper.live) for the country, language and device you choose, and check where a domain ranks right now.
 
